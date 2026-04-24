@@ -97,4 +97,4 @@ src/
 - The API returns a 404-style message (`There is nothing here`) for no-match filters; this app maps that to a user-facing "No results found" state.
 - Episodes/locations with very large character lists may load cast/residents slower due to chunked API requests.
 - Filter menu UX is modal-based and functional, but could be further enhanced with richer animations.
-- Unit tests are configured (`jest`), but dedicated assignment test cases may still need to be added/expanded.
+- Unit tests are not included. The project structure allows adding tests for API logic and UI components in the future.

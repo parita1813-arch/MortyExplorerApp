@@ -25,7 +25,7 @@ export interface Character {
   status: 'Alive' | 'Dead' | 'unknown';
   species: string;
   type: string;
-  gender: 'Female' | 'Male' | 'Genderless' | 'unknown';
+  gender: 'Female' | 'Male' | 'unknown';
   origin: CharacterPlace;
   location: CharacterPlace;
   image: string;
@@ -60,7 +60,7 @@ export interface Location {
 export interface CharacterFilters {
   search: string;
   status: '' | 'alive' | 'dead' | 'unknown';
-  gender: '' | 'female' | 'male' | 'genderless' | 'unknown';
+  gender: '' | 'female' | 'male' | 'unknown';
 }
 
 /** Favourite character record persisted in SQLite. */

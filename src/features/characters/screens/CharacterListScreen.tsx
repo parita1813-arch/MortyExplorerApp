@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
   Animated,
-  FlatList,
   Modal,
   Pressable,
   StyleSheet,
@@ -30,7 +29,7 @@ export function CharacterListScreen({ onCharacterPress }: Props) {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(state => state.ui.filters);
   const debouncedSearch = useDebounce(filters.search, 300);
-  const { translateY, onScroll } = useHideHeaderOnScroll();
+  const { translateY, onScroll } = useHideHeaderOnScroll(100);
   const [activeMenu, setActiveMenu] = useState<'status' | 'gender' | null>(null);
 
   const queryFilters = useMemo<CharacterFilters>(
@@ -52,7 +51,10 @@ export function CharacterListScreen({ onCharacterPress }: Props) {
   });
 
   const characters = charactersQuery.data?.pages.flatMap(page => page.results) ?? [];
-  const errorMessage = charactersQuery.isError ? charactersQuery.error.message : '';
+  const errorMessage =
+    charactersQuery.isError
+      ? (charactersQuery.error instanceof Error ? charactersQuery.error.message : String(charactersQuery.error))
+      : '';
   const isNoResultError = /there is nothing here/i.test(errorMessage);
   const hasQueryError = charactersQuery.isError && !isNoResultError;
 
@@ -80,7 +82,7 @@ export function CharacterListScreen({ onCharacterPress }: Props) {
           />
         </View>
       </Animated.View>
-      <FlatList
+      <Animated.FlatList
         contentContainerStyle={styles.list}
         data={hasQueryError ? [] : characters}
         keyExtractor={item => item.id.toString()}
@@ -124,7 +126,7 @@ export function CharacterListScreen({ onCharacterPress }: Props) {
         title="Select Gender"
         visible={activeMenu === 'gender'}
         value={filters.gender}
-        options={['', 'female', 'male', 'genderless', 'unknown']}
+        options={['', 'female', 'male', 'unknown']}
         onClose={() => setActiveMenu(null)}
         onSelect={next => dispatch(setGender(next as CharacterFilters['gender']))}
       />

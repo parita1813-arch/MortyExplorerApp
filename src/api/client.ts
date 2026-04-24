@@ -7,12 +7,14 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.response.use(
-  response => response,
+  response => {
+    return response;
+  },
   error => {
     const message: string =
       error?.response?.data?.error ??
       error?.message ??
       'Unexpected network error';
     return Promise.reject(new Error(message));
-  },
+  }
 );

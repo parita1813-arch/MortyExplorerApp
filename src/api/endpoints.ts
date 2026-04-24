@@ -38,12 +38,13 @@ export async function getEpisodes(page: number): Promise<PaginatedResponse<Episo
   return response.data;
 }
 
-/** Gets many episodes by id list used by character details. */
+/** Gets many episodes by id list */
 export async function getEpisodesByIds(ids: number[]): Promise<Episode[]> {
-  if (ids.length === 0) {
-    return [];
-  }
-  const response = await apiClient.get<Episode | Episode[]>(`/episode/${ids.join(',')}`);
+  if (ids.length === 0) return [];
+
+  const response = await apiClient.get<Episode | Episode[]>(
+    `/episode/${ids.join(',')}`
+  );
   const data = response.data;
   return Array.isArray(data) ? data : [data];
 }
@@ -56,24 +57,28 @@ export async function getLocations(page: number): Promise<PaginatedResponse<Loca
   return response.data;
 }
 
-/** Gets many characters by id list used by episode/location details. */
+/** Gets many characters by id list */
 export async function getCharactersByIds(ids: number[]): Promise<Character[]> {
-  if (ids.length === 0) {
-    return [];
-  }
+  if (ids.length === 0) return [];
+
   const uniqueIds = Array.from(new Set(ids));
   const chunkSize = 20;
   const chunks: number[][] = [];
 
-  for (let index = 0; index < uniqueIds.length; index += chunkSize) {
-    chunks.push(uniqueIds.slice(index, index + chunkSize));
+  for (let i = 0; i < uniqueIds.length; i += chunkSize) {
+    chunks.push(uniqueIds.slice(i, i + chunkSize));
   }
 
   const responses = await Promise.all(
     chunks.map(async chunk => {
-      const response = await apiClient.get<Character | Character[]>(`/character/${chunk.join(',')}`);
-      return Array.isArray(response.data) ? response.data : [response.data];
-    }),
+      const response = await apiClient.get<Character | Character[]>(
+        `/character/${chunk.join(',')}`
+      );
+
+      return Array.isArray(response.data)
+        ? response.data
+        : [response.data];
+    })
   );
 
   return responses.flat();

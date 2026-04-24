@@ -3,27 +3,23 @@ import { Animated } from 'react-native';
 
 /** Hook to animate header hide/show according to scroll direction. */
 export function useHideHeaderOnScroll(headerHeight = 56) {
-  const translateY = useRef(new Animated.Value(0)).current;
-  const lastOffset = useRef(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const translateY = useMemo(() => {
+    const clamped = Animated.diffClamp(scrollY, 0, headerHeight);
+    return clamped.interpolate({
+      inputRange: [0, headerHeight],
+      outputRange: [0, -headerHeight],
+      extrapolate: 'clamp',
+    });
+  }, [headerHeight, scrollY]);
 
   const onScroll = useMemo(
-    () => (event: { nativeEvent: { contentOffset: { y: number } } }) => {
-      const currentY = event.nativeEvent.contentOffset.y;
-      const delta = currentY - lastOffset.current;
-      lastOffset.current = currentY;
-
-      if (Math.abs(delta) < 2) {
-        return;
-      }
-
-      const toValue = delta > 0 ? -headerHeight : 0;
-      Animated.timing(translateY, {
-        toValue,
-        duration: 180,
+    () =>
+      Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
         useNativeDriver: true,
-      }).start();
-    },
-    [headerHeight, translateY],
+      }),
+    [scrollY],
   );
 
   return { translateY, onScroll };
