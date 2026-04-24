@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Modal,
@@ -31,6 +31,7 @@ export function CharacterListScreen({ onCharacterPress }: Props) {
   const debouncedSearch = useDebounce(filters.search, 300);
   const { translateY, onScroll } = useHideHeaderOnScroll(100);
   const [activeMenu, setActiveMenu] = useState<'status' | 'gender' | null>(null);
+  const lastEndReachedAt = useRef(0);
 
   const queryFilters = useMemo<CharacterFilters>(
     () => ({ ...filters, search: debouncedSearch }),
@@ -89,11 +90,16 @@ export function CharacterListScreen({ onCharacterPress }: Props) {
         onScroll={onScroll}
         scrollEventThrottle={16}
         onEndReached={() => {
+          const now = Date.now();
+          if (now - lastEndReachedAt.current < 800) {
+            return;
+          }
+          lastEndReachedAt.current = now;
           if (charactersQuery.hasNextPage && !charactersQuery.isFetchingNextPage) {
             charactersQuery.fetchNextPage();
           }
         }}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.25}
         renderItem={({ item }) => <CharacterCard character={item} onPress={onCharacterPress} />}
         ListEmptyComponent={
           hasQueryError ? (
