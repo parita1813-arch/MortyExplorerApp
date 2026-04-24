@@ -2,6 +2,10 @@
 
 React Native assignment app based on the [Rick and Morty API](https://rickandmortyapi.com/api).
 
+## Links
+
+- GitHub Repo: https://github.com/parita1813-arch/MortyExplorerApp.git
+
 ## Project Setup Steps
 
 ### Prerequisites
